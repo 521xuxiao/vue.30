@@ -1,0 +1,185 @@
+
+1. ref  (定义常量)
+
+	例子: 
+		setup() {
+			const str = ref('');
+			return {str}
+		}
+		
+2. reactive   （定义变量）
+
+	例子：
+		setup() {
+			const object = reactive({name: '许潇', age: 18});
+			return{object}
+		}
+		
+3. readonly   （只读属性）
+
+	例子：
+		setup() {
+			const only = readonly({name: '许潇', ahe: 18});
+			return {only};
+		}
+	
+4. toRefs  (包装在reactive里面的变量解构出来， 具有响应式)
+
+	例子：
+		setup() {
+			let obj = reactive({name: 'xuxiao', age: 18});
+			const {name, age} = toRefs(obj);
+			return {name, age};
+		}
+	
+5. toRef  （外界传过来的是空，toRef也不会报错）
+
+	例子：
+		setup() {
+			let obj = reactive({name: '张三', age: 18});
+			let {name, age} = toRefs(obj);
+			
+			let job = toRef(obj, 'job');
+			
+			setTimeout(()=>{
+				name.value = '李四',
+				age.value = 20;
+				job.value = '程序员';
+			}, 3000);
+			
+			return {name, age, job};
+		}
+	
+6. context   (setup里面的上下文，用于组件间的通讯)
+
+	例子：
+		setup(props, context) {
+			const {attes, slots, emit} = context;   // attrs 用于接受父组件传过来的值  标签用的时候用 $attrs.xxx
+			                                        // slots 获取父组件传过来的插槽    用的时候 slots.default()[0].props
+													// emit  组件件向父组件传值        用的时候 emit(key, value);
+		}
+		
+		
+7. 计算属性
+
+	例子：
+		setup(props, context) {
+		const {ref, computed} = Vue;
+			let num1 = ref(10);
+			let num2 = computed(()=>{
+				return num1.value * 10;
+			})
+			function addClick () {
+				num1.value += 10;
+			}
+			return {num1, num2, addClick};
+		}
+		
+计算属性新用法  （computed里面也可以用引用数据类型， 此处没列，和基本数据类型一样的用法）
+
+	例子：
+		setup() {
+			let num1 = ref(10);
+			let num2 = cumputed(()=> num1.value * 10);   // 旧的用法
+			
+			let num3 = computed({
+				get: ()=>{
+					return num1.value * 10;
+				},
+				set: (res)=>{
+					num1.value = res / 10;   // set里面是在num2变化的时候运行, 也就是两秒之后（见下面的延时器）
+				}
+			})；
+			
+			setTimeout(()=>{
+				num2.value = 2000;
+			}, 2000);
+			
+			
+			
+			return {num1, num2};
+		}
+		
+		
+8. 监听器
+
+	例子：
+		setup(props, context) {
+			const {ref, reactive, watch} = Vue;
+			let num1 = ref('');
+			
+			watch(num1, (value)=>{
+				console.log(value);   // 监听一个字段
+			})
+			
+			watch([num1, num2], ( [value1, value2], [oldValue1, oldValue2] )=>{  // 监听多个字段放在一个数组里面
+			
+			})
+			
+			return {num1};
+		}
+		
+监听引用数据类型
+
+	例子：
+		setup(props, context) {
+			let num1 = ref('');
+			let num2 = ref('');
+			watchEffect(()=>{                // watchEffect 监听到整个实力里面的所有的变量的变化
+				console.log(num1.value);
+				console.log(num2.value);
+			})
+		}
+		
+
+9. 发布订阅（provide, inject， 用于组件之间的通讯）
+
+		provide("key", value)   // 将消息发布出去
+		inject（"key"）         // 将消息接收到
+		
+		
+10. 获取dom节点
+
+	例子：
+		template: `
+			<div ref='lisi'>lisi</div>
+			<div ref='zhangsan'>zhangsan</div>
+		`,
+		setup() {
+			const {ref} = vue;
+			let zhangsan = ref(null);
+			let lisi = ref(lisi);
+			console.log(zhangsan, lisi)   // 这两个就是张三  李四的dom节点
+			return{zhangsan, lisi};
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+
